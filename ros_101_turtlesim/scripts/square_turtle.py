@@ -20,7 +20,11 @@ while not rospy.is_shutdown():
     msg.linear.x = 0.0
     publisher.publish(msg)
 
+<<<<<<< HEAD
     # Turn rightb
+=======
+    # Turn right
+>>>>>>> d63099f774f8216679768e01ac12855e89951746
     start_time = time.time()
     while (time.time() - start_time) < 1:
         msg.linear.x = 0.0

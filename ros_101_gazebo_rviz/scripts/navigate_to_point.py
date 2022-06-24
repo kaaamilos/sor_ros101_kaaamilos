@@ -36,7 +36,11 @@ def error_angle(target, source):
 
 class NavigateAvoid():
     def __init__(self):
+<<<<<<< HEAD
         self.range_center = DIST_AVOID_ENGAGE * 2.0  # initialize to a value higher than the threshold
+=======
+        self.range_center = DIST_AVOID_ENGAGE * 2.0  # initialize to a value higher tha the threshold
+>>>>>>> d63099f774f8216679768e01ac12855e89951746
         self.cmd_fwd = 0
         self.cmd_rot = 0
         self.position_x = 0
