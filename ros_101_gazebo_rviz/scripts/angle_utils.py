@@ -1,8 +1,12 @@
+#!/usr/bin/env python
 import math
+
+
 def xy_to_range_angle(x, y):
- rng = math.sqrt(x * x + y *y)
- angle = math.atan2(y, x)
- return (rng, angle)
+    rng = math.sqrt(x * x + y *y)
+    angle = math.atan2(y, x)
+    return rng, angle
+
 
 def error_angle(target, source):
     ang = target - source
