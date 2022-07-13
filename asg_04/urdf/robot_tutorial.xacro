@@ -165,7 +165,59 @@
     <xacro:box_inertia m="1" w="0.025" h="0.025" d="0.025"/>
   </link>
 
+    <!--Left Laser Joint-->
+  <joint name="left_laser_joint" type="fixed">
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.075 0.05 0.02" rpy="0 0 0.52"/>
+    <parent link="base_link"/>
+    <child link="left_laser_link"/>
+  </joint>
 
-  <xacro:include filename="$(find ros_101_gazebo_rviz)/urdf/robot_tutorial_gazebo.xacro"/>
+  <!--Left Laser Link-->
+  <link name="left_laser_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 0.025"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 0.025"/>
+      </geometry>
+    </visual>
+    <xacro:box_inertia m="1" w="0.025" h="0.025" d="0.025"/>
+  </link>
+
+  <!--Right Laser Joint-->
+  <joint name="right_laser_joint" type="fixed">
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.075 -0.05 0.02" rpy="0 0 -0.52"/>
+    <parent link="base_link"/>
+    <child link="right_laser_link"/>
+  </joint>
+
+  <!--Right Laser Link-->
+  <link name="right_laser_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 0.025"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 0.025"/>
+      </geometry>
+    </visual>
+    <xacro:box_inertia m="1" w="0.025" h="0.025" d="0.025"/>
+  </link>
+
+
+  <xacro:include filename="$(find asg_04)/urdf/robot_tutorial_gazebo.xacro"/>
 
 </robot>

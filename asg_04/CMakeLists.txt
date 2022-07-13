@@ -7,7 +7,13 @@ project(asg_04)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+    geometry_msgs
+    roscpp
+    rospy
+    std_msgs
+    sensor_msgs
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -200,3 +206,9 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+catkin_install_python(
+    PROGRAMS
+    scripts/sonar.py
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
