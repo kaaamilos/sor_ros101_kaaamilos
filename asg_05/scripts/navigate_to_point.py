@@ -2,7 +2,7 @@
 import rospy
 import math
 import time
-#import angle_utils
+# import angle_utils
 from sensor_msgs.msg import Range
 from geometry_msgs.msg import Twist
 from tf.transformations import euler_from_quaternion
@@ -17,9 +17,11 @@ TARGET_X = 6.0  # [m] Target X location
 TARGET_Y = 0.0  # [m] Target Y location
 RADIUS = 0.1  # [m] Threshold around the target to consider it reached
 STEER_ACTION_STOP = 0.2 * AVOID_STEERING_SPEED  # [rad/s] maximum heading rate to allow forward motion
+SAFE_RADIUS = 0.2
+
 
 def xy_to_range_angle(x, y):
-    rng = math.sqrt(x * x + y *y)
+    rng = math.sqrt(x * x + y * y)
     angle = math.atan2(y, x)
     return rng, angle
 
@@ -70,6 +72,8 @@ class NavigateAvoid():
         self._time_steer = time.time()
         self._time_straight = time.time()
 
+        self.last_point = 0.0  # will be used for tangent calculate
+
     # callback for the tf listener
     def update_pose(self):
         (trans, rot) = self.tf_listener.lookupTransform('/odom', '/base_footprint', rospy.Time(0))
@@ -96,7 +100,7 @@ class NavigateAvoid():
     def update_range(self, message):
         angle = message.field_of_view
         self.range_center = message.range
-        rospy.loginfo(f'range: {self.range_center}')
+        #rospy.loginfo(f'range: {self.range_center}, type: {type(self.range_center)}')
 
     # callback of the source command
     def update_source(self, message):
@@ -132,9 +136,13 @@ class NavigateAvoid():
 
             if self.range_center < DIST_AVOID_ENGAGE:
                 self._time_steer = time.time()
-            if time.time() - self._time_steer > TIME_KEEP_STEERING:
+            # if time.time() - self._time_steer > TIME_KEEP_STEERING:
+            if self.range_center == float('inf'):
+                self.find_tangent()
                 self.avoid_state = 'go_straight'
                 self._time_straight = time.time()
+            else:
+                self.last_point = self.range_center, self.yaw
 
         elif self.avoid_state == 'go_straight':
             break_action = 1.0
@@ -182,6 +190,28 @@ class NavigateAvoid():
             self.pub_avoid.publish(self._message_avoid)
 
             rate.sleep()
+
+    def find_tangent(self):
+        Cx = self.position_x + self.last_point[0] * math.cos(self.last_point[1])
+        Cy = self.position_x + self.last_point[0] * math.sin(self.last_point[1])
+
+        Px, Py = self.position_x, self.position_y
+        a = SAFE_RADIUS
+
+        b = math.sqrt((Px - Cx) ** 2 + (Py - Cy) ** 2)
+        th = math.acos(a / b)  # angle theta
+        d = math.atan2(Py - Cy, Px - Cx)  # direction angle of point P from C
+        d1 = d + th  # direction angle of point T1 from C
+        d2 = d - th  # direction angle of point T2 from C
+
+        T1x = Cx + a * math.cos(d1)
+        T1y = Cy + a * math.sin(d1)
+        T2x = Cx + a * math.cos(d2)
+        T2y = Cy + a * math.sin(d2)
+
+        rospy.loginfo(f'robot position: {self.position_x}, {self.position_y}')
+        rospy.loginfo(f'calculated points\nT1: {T1x},{T1y}\nT2:{T2x},{T2y}')
+        
 
 
 if __name__ == '__main__':
